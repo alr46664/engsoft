@@ -3,7 +3,7 @@ public class Exemplar{
 
     public Exemplar(){}
 
-    public getCodExemplar(){
+    public String getCodExemplar(){
         return codExemplar;
     }
 }
