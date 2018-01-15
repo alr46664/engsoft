@@ -12,7 +12,5 @@ public abstract class  Usuario{
 
     }
 
-    public void emprestar(String codigoLivro){
-
-    }
+    public abstract void emprestar(String codigoLivro);
 }
