@@ -33,4 +33,15 @@ public class Livro implements Observer{
         System.out.println("Livro observado foi registrado pela segunda vez simultanea.");
     }
 
+    @Override
+    public String toString(){
+        return "Livro:\n\tTitulo: "+this.titulo+
+               "\n\tCodigo: " +this.codLivro+
+               "\n\tEditora: " +this.editora+
+               "\n\tAutor(es): " +autores+
+               "\n\tEdicao: " +edicao+
+               "\n\tAno: " +anoEdicao;
+            
+    }
+
 }
