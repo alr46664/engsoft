@@ -6,8 +6,7 @@ import engsoft.observer.Subject;
 import engsoft.usuario.Usuario;
 
 public class Livro implements Subject {
-    private ArrayList<Observer> observers;
-    private ArrayList<Usuario> reservas;
+    private ArrayList<Observer> observers;    
     private ArrayList<Exemplar> exemplares; 
 	
 	private String codLivro;
@@ -19,7 +18,6 @@ public class Livro implements Subject {
 
     public Livro(String cod, String titulo, String editora, String autores, String edicao, String anoEdicao){
         this.observers = new ArrayList<Observer>();
-        this.reservas = new ArrayList<Usuario>();
         this.exemplares = new ArrayList<Exemplar>();
         
         this.codLivro  = cod;
@@ -29,10 +27,6 @@ public class Livro implements Subject {
         this.edicao    = edicao;
         this.anoEdicao = anoEdicao;        
     }
-
-	public ArrayList<Exemplar> getExemplares() {
-		return exemplares;
-	}
 
 	public String getCodLivro() {
 		return codLivro;
@@ -60,13 +54,18 @@ public class Livro implements Subject {
 
 	@Override
     public String toString(){
-        return "Livro:"+
-        	"\n\tTítulo: "+ titulo+
-            "\n\tCodigo: " + codLivro+
-            "\n\tEditora: " + editora+
-            "\n\tAutor(es): " + autores+
-            "\n\tEdição: " + edicao+
-            "\n\tAno de Edição: " + anoEdicao;
+        String s = "\t----------  Livro:  ----------"+
+            	"\n\tTítulo: "+ titulo+
+                "\n\tCodigo: " + codLivro+
+                "\n\tEditora: " + editora+
+                "\n\tAutor(es): " + autores+
+                "\n\tEdição: " + edicao+
+                "\n\tAno de Edição: " + anoEdicao +
+                "\n\n\t----------  Lista de Exemplares  ----------\n";
+        for (Exemplar exemplar: this.exemplares) {
+        	s += exemplar;
+        }
+		return s;
             
     }
     
@@ -99,58 +98,94 @@ public class Livro implements Subject {
     	}    	    
     }
     
-    public void pegarEmprestado(Usuario u) throws Exception {
-    	for (Exemplar e: this.exemplares) {
-    		if ( ! e.getEmprestado() ) {
-    			e.pegarEmprestado(u, u.getDiasEmprestimo());
-    			return;
-    		}
+    public Exemplar pegarEmprestado(Usuario u, int dias, boolean force) throws Exception {
+    	for (Exemplar exemplar: this.exemplares) {
+    		try {
+    			exemplar.pegarEmprestado(u, dias, force);
+    			return exemplar;	
+    		} catch (Exception e) {
+    		}    		
     	}
     	throw new Exception("Nenhum exemplar do livro disponivel para emprestimo.\n" + this);
     }
     
-    public void devolver(Usuario u) throws Exception {
+    public Exemplar devolver(Usuario u) throws Exception {
     	for (Exemplar exemplar: this.exemplares) {
-    		if (exemplar.getEmprestado()) {
-    			try {
-    				exemplar.devolver(u);
-    				return;
-    			} catch (Exception e) { }    		
+    		if (exemplar.isEmprestado() != u) { 
+    			continue;
     		}
+    		try {
+				exemplar.devolver();
+				return exemplar;
+			} catch (Exception e) { 
+				throw new Exception("Nao foi possivel devolver o exemplar abaixo.\n" + exemplar);
+			}    		
     	}
     	throw new Exception("Nao foi possivel encontrar o emprestimo do livro feito pelo usuario abaixo.\n" +
     		u + "\n" +
-    		this);
-    	
+    		this);    	
     }
     
-    public void reservar(Usuario usuario) throws Exception{
-    	if (this.reservas.size() > this.exemplares.size()) {
-    		throw new Exception("Numero de reservas ultrapassa o numero de exemplares do livro\n" + this);
-    	}
-    	for(Exemplar e: this.exemplares) {
-    		Usuario usuarioExemplar = e.getUsuarioReservadoEmprestado();
-    		if (!e.getEmprestado() && !e.getReservado() && (usuarioExemplar != null || usuarioExemplar == usuario)) {
-    			e.reservar(usuario);
-    			this.reservas.add(usuario);
-    	    	if (this.reservas.size() >= 2) {
-    	    		this.notifyObservers();
-    	    	}
-    	    	return;
-    		}
+    public Exemplar reservar(Usuario usuario, boolean force) throws Exception{    	
+    	for(Exemplar exemplar: this.exemplares) {
+    		try {
+    			exemplar.reservar(usuario, force);    			
+    			return exemplar;
+    		} catch (Exception e) {
+    			
+    		}    		
     	}
     	throw new Exception("Todos os exemplares do livro estao emprestados, ou reservados a outras pessoas.\n" + this);
     }
 
-    public void desreservar(Usuario usuario) throws Exception{
-    	for(Exemplar e: this.exemplares) {
-    		if (e.getReservado() && e.getUsuarioReservadoEmprestado() == usuario) {
-    			e.desreservar(usuario);
-    			this.reservas.remove(usuario);
-    			return;
+    public Exemplar desreservar(Usuario usuario) throws Exception{
+    	for(Exemplar exemplar: this.exemplares) {
+    		if (exemplar.isReservado() != usuario) {
+    			continue;
     		}
+    		try {    			
+    			exemplar.desreservar(usuario);
+    			return exemplar;
+    		} catch (Exception e) {
+    			
+    		}    		
     	}
     	throw new Exception("Nao ha reservas para o livro no nome desse usuario.\n" + this + "\n" + usuario);    	
-    }    
+    }
+    
+    public String getHistorico(Usuario usuario) {
+    	String s = "";
+    	for (Exemplar exemplar: this.exemplares) {
+    		s += exemplar.getHistorico(usuario);
+    	}
+    	return s;
+    }
+    
+    public boolean isReservado(Usuario usuario) {
+    	for(Exemplar exemplar: this.exemplares) {
+    		if (exemplar.isReservado() == usuario) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public boolean isEmprestado(Usuario usuario) {
+    	for(Exemplar exemplar: this.exemplares) {
+    		if (exemplar.isEmprestado() == usuario) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+        
+	public boolean isEmprestimoAtrasado(Usuario usuario) throws Exception {		
+		for(Exemplar exemplar: this.exemplares) {
+    		if (exemplar.isEmprestado() == usuario && exemplar.isEmprestimoAtrasado()) {
+    			return true;
+    		}
+    	}	
+		return false;
+	}
 
 }
