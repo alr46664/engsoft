@@ -124,15 +124,33 @@ public class Livro implements Subject {
     	
     }
     
-    public void reservar(Usuario usuario){
-    	this.reservas.add(usuario);
-    	if (this.reservas.size() >= 2) {
-    		this.notifyObservers();
+    public void reservar(Usuario usuario) throws Exception{
+    	if (this.reservas.size() > this.exemplares.size()) {
+    		throw new Exception("Numero de reservas ultrapassa o numero de exemplares do livro\n" + this);
     	}
+    	for(Exemplar e: this.exemplares) {
+    		Usuario usuarioExemplar = e.getUsuarioReservadoEmprestado();
+    		if (!e.getEmprestado() && !e.getReservado() && (usuarioExemplar != null || usuarioExemplar == usuario)) {
+    			e.reservar(usuario);
+    			this.reservas.add(usuario);
+    	    	if (this.reservas.size() >= 2) {
+    	    		this.notifyObservers();
+    	    	}
+    	    	return;
+    		}
+    	}
+    	throw new Exception("Todos os exemplares do livro estao emprestados, ou reservados a outras pessoas.\n" + this);
     }
 
-    public void desreservar(Usuario usuario){
-    	this.reservas.remove(usuario);
+    public void desreservar(Usuario usuario) throws Exception{
+    	for(Exemplar e: this.exemplares) {
+    		if (e.getReservado() && e.getUsuarioReservadoEmprestado() == usuario) {
+    			e.desreservar(usuario);
+    			this.reservas.remove(usuario);
+    			return;
+    		}
+    	}
+    	throw new Exception("Nao ha reservas para o livro no nome desse usuario.\n" + this + "\n" + usuario);    	
     }    
 
 }

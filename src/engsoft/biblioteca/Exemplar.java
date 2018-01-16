@@ -39,6 +39,10 @@ public class Exemplar {
     	return s;
     }  
     
+    public Usuario getUsuarioReservadoEmprestado() {
+    	return this.usuarioReservadoEmprestado;
+    }
+    
     public boolean getEmprestado() {
     	return this.dataEmprestimo != null;
     }
