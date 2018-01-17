@@ -1,4 +1,5 @@
 package engsoft.usuario;
+import engsoft.biblioteca.Exemplar;
 import engsoft.biblioteca.Livro;
 
 public class Professor extends Usuario {
@@ -21,9 +22,10 @@ public class Professor extends Usuario {
 	}	
 
 	@Override
-	public void pegarEmprestado(Livro l) throws Exception {		
-		l.pegarEmprestado(this, getDiasEmprestimo(), true);
+	public Exemplar pegarEmprestado(Livro l) throws Exception {		
+		Exemplar e = l.pegarEmprestado(this, getDiasEmprestimo(), true);
 		addEmprestado(l);
+		return e;
 	}
     
 }

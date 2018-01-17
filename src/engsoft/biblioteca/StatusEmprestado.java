@@ -20,7 +20,7 @@ public class StatusEmprestado extends Status {
 	public void devolver() throws Exception {		
 		Date today = new Date();
 		this.dataDevolucaoFeita = today;
-		Status s = new StatusDisponivel(this.exemplar, null, null, null);
+		Status s = new StatusDisponivel(this.exemplar, null, today, null);
 		this.exemplar.setState(s);
 	}
 

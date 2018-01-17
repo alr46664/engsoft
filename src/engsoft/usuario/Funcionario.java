@@ -1,4 +1,5 @@
 package engsoft.usuario;
+import engsoft.biblioteca.Exemplar;
 import engsoft.biblioteca.Livro;
 
 public class Funcionario extends Usuario {
@@ -15,13 +16,14 @@ public class Funcionario extends Usuario {
     }
 
 	@Override
-	public void pegarEmprestado(Livro l) throws Exception {		
+	public Exemplar pegarEmprestado(Livro l) throws Exception {		
 		if (temEmprestimoAtrasado() || getQtdEmprestimos() >= MAX_EMPRESTIMO) {
 			throw new Exception("Nao foi possivel pegar o livro emprestado. O funcionario abaixo tem emprestimos atrasados ou ultrapassou sua cota maxima de emprestimos.\n" +
 				this);
 		}
-		l.pegarEmprestado(this, getDiasEmprestimo(), false);
+		Exemplar e = l.pegarEmprestado(this, getDiasEmprestimo(), false);
 		addEmprestado(l);
+		return e;
 	}
 
 }

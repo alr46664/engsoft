@@ -1,6 +1,7 @@
 package engsoft.usuario;
 import java.util.ArrayList;
 
+import engsoft.biblioteca.Exemplar;
 import engsoft.biblioteca.Livro;
 import engsoft.observer.Observer;
 
@@ -72,16 +73,18 @@ public abstract class  Usuario implements Observer {
     	return s;
     }
     
-    public void devolver(Livro l) throws Exception {
-    	l.devolver(this);
+    public Exemplar devolver(Livro l) throws Exception {
+    	Exemplar e = l.devolver(this);
     	this.emprestimos.remove(l);
     	this.historico.add(l);
+    	return e;
     }
     
-    public void desreservar(Livro l) throws Exception {
-    	l.desreservar(this);
+    public Exemplar desreservar(Livro l) throws Exception {
+    	Exemplar e = l.desreservar(this);
     	this.reservas.remove(l);
     	this.historico.add(l);
+    	return e;
     }
     
     public boolean temEmprestimoAtrasado() throws Exception {
@@ -100,16 +103,17 @@ public abstract class  Usuario implements Observer {
     	return this.qtdNotificado;
 	}
         
-    public final void reservar(Livro l) throws Exception {
+    public final Exemplar reservar(Livro l) throws Exception {
     	if (getQtdReservas() >= MAX_RESERVA) {
     		throw new Exception("O usuario abaixo ultrapassou o limite maximo de reservas (" + MAX_RESERVA +
     			").\n" + this);
     	}
-    	l.reservar(this, false);
+    	Exemplar e = l.reservar(this, false);
 		this.reservas.add(l);
+		return e;
     }
     
-    public abstract void pegarEmprestado(Livro l) throws Exception;    
+    public abstract Exemplar pegarEmprestado(Livro l) throws Exception;    
     
     protected void addEmprestado(Livro l) {
     	this.emprestimos.add(l);

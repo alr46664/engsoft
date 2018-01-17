@@ -57,22 +57,22 @@ public class Biblioteca {
 	public void emprestar(String codUsuario, String codLivro) throws Exception {
 		Usuario usuario = getUsuario(codUsuario);
 		Livro livro = getLivro(codLivro);
-		usuario.pegarEmprestado(livro);		
-		System.out.println("Sucesso - Emprestimo do livro realizado com sucesso!\n" + usuario + livro + "\n");
+		Exemplar exemplar = usuario.pegarEmprestado(livro);		
+		System.out.println(exemplar + "\nSucesso - Emprestimo do livro realizado com sucesso!\n");
 	}
 	
 	public void devolver(String codUsuario, String codLivro) throws Exception {
 		Usuario usuario = getUsuario(codUsuario);
 		Livro livro = getLivro(codLivro);
-		usuario.devolver(livro);
-		System.out.println("Sucesso - Devolucao do livro realizada com sucesso!\n" + usuario + livro + "\n");
+		Exemplar exemplar = usuario.devolver(livro);
+		System.out.println(exemplar + "\nSucesso - Devolucao do livro realizada com sucesso!\n");
 	}
 	
 	public void reservar(String codUsuario, String codLivro) throws Exception {
 		Usuario usuario = getUsuario(codUsuario);
 		Livro livro = getLivro(codLivro);
-		usuario.reservar(livro);
-		System.out.println("Sucesso - Reserva do livro realizada com sucesso!\n" + usuario + livro + "\n");
+		Exemplar exemplar = usuario.reservar(livro);
+		System.out.println(exemplar + "\nSucesso - Reserva do livro realizada com sucesso!\n");
 	}
 	
 	public void registrarObservar(String codUsuario, String codLivro) throws Exception {
