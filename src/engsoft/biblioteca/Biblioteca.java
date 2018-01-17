@@ -79,7 +79,10 @@ public class Biblioteca {
 		Usuario usuario = getUsuario(codUsuario);
 		Livro livro = getLivro(codLivro);
 		livro.registerObserver(usuario);
-		System.out.println("Sucesso - Registro de novo Observador realizado com sucesso!\n" + usuario + livro + "\n");
+		System.out.println(
+                        "Nome do Usuario: " + usuario.getNome() + "\n" +
+                        "Livro: " + livro.getTitulo() + "\n" +
+                        "\nSucesso - Registro de novo observador realizado com sucesso!\n");
 	}
 	
 	public void exibirListagem(String codUsuario) throws Exception {

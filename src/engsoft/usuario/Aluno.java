@@ -21,6 +21,7 @@ public class Aluno extends Usuario {
 			throw new Exception("Nao foi possivel pegar o livro emprestado. O aluno abaixo tem emprestimos atrasados ou ultrapassou sua cota maxima de emprestimos.\n" +
 				this);
 		}
+                super.pegarEmprestado(l);
 		Exemplar e = l.pegarEmprestado(this, getDiasEmprestimo(), false);
 		addEmprestado(l);
 		return e;

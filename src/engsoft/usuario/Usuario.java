@@ -73,6 +73,24 @@ public abstract class  Usuario implements Observer {
     	return s;
     }
     
+    public boolean isEmprestado(Livro livro){
+        for(Livro l: this.emprestimos){
+            if (l.equals(livro)){
+                return true;    
+            }            
+        }
+        return false;
+    }
+    
+    public boolean isReservado(Livro livro){
+        for(Livro l: this.reservas){
+            if (l.equals(livro)){
+                return true;    
+            }            
+        }
+        return false;
+    }
+    
     public Exemplar devolver(Livro l) throws Exception {
     	Exemplar e = l.devolver(this);
     	this.emprestimos.remove(l);
@@ -108,12 +126,25 @@ public abstract class  Usuario implements Observer {
     		throw new Exception("O usuario abaixo ultrapassou o limite maximo de reservas (" + MAX_RESERVA +
     			").\n" + this);
     	}
+        if (isReservado(l) || isEmprestado(l)) {
+            throw new Exception("O usuario abaixo ja reservou ou pegou emprestado o livro.\n" + this);
+    	}
     	Exemplar e = l.reservar(this, false);
-		this.reservas.add(l);
-		return e;
+        this.reservas.add(l);
+        return e;
     }
     
-    public abstract Exemplar pegarEmprestado(Livro l) throws Exception;    
+    public Exemplar pegarEmprestado(Livro l) throws Exception {
+        if (isEmprestado(l)) {
+            throw new Exception(this + "\nO usuario abaixo ja pegou emprestado o livro.\n");
+        }
+        try {
+            return this.desreservar(l);
+        } catch(Exception e){
+
+        }
+        return null;
+    }    
     
     protected void addEmprestado(Livro l) {
     	this.emprestimos.add(l);

@@ -57,7 +57,7 @@ public class Programa {
 				// remova o commando do vetor
 				command.execute(argArray, biblio);
 			} catch(Exception e) {
-				System.out.println("Erro:");
+				System.out.println("\nErro:");
 				System.out.println(e);
 			}
 		}

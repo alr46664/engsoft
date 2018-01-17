@@ -6,6 +6,8 @@ import engsoft.observer.Subject;
 import engsoft.usuario.Usuario;
 
 public class Livro implements Subject {
+    private static int RESERVA_NOTIFY = 3;
+    
     private ArrayList<Observer> observers;    
     private ArrayList<Exemplar> exemplares; 
 	
@@ -51,6 +53,26 @@ public class Livro implements Subject {
 	public String getAnoEdicao() {
 		return anoEdicao;
 	}
+        
+        public int getQtdReservas(){
+            int reservas = 0;
+            for(Exemplar e: this.exemplares){
+                if (e.isReservado() != null){
+                    reservas++;
+                }
+            }
+            return reservas;
+        }
+        
+        public int getQtdEmprestimo(){
+            int emprestimos = 0;
+            for(Exemplar e: this.exemplares){
+                if (e.isEmprestado() != null){
+                    emprestimos++;
+                }
+            }
+            return emprestimos;
+        }
 
 	@Override
     public String toString(){
@@ -118,24 +140,28 @@ public class Livro implements Subject {
 				exemplar.devolver();
 				return exemplar;
 			} catch (Exception e) { 
-				throw new Exception("Nao foi possivel devolver o exemplar abaixo.\n" + exemplar);
+				throw new Exception(exemplar + "\nNao foi possivel devolver o exemplar.\n");
 			}    		
     	}
-    	throw new Exception("Nao foi possivel encontrar o emprestimo do livro feito pelo usuario abaixo.\n" +
-    		u + "\n" +
-    		this);    	
+    	throw new Exception("Nome do Usuario:" + u.getNome() + "\n" +
+                "Livro:" + this.getTitulo() +  "\n" +
+                "\n\nNao foi possivel encontrar o emprestimo do livro feito pelo usuario.\n");    	
     }
     
     public Exemplar reservar(Usuario usuario, boolean force) throws Exception{    	
     	for(Exemplar exemplar: this.exemplares) {
     		try {
     			exemplar.reservar(usuario, force);    			
+                        if (this.getQtdReservas() >= Livro.RESERVA_NOTIFY){
+                            this.notifyObservers();
+                        }
     			return exemplar;
     		} catch (Exception e) {
     			
     		}    		
     	}
-    	throw new Exception("Todos os exemplares do livro estao emprestados, ou reservados a outras pessoas.\n" + this);
+    	throw new Exception("Livro:" + this.getTitulo() +  "\n" +
+                "Todos os exemplares do livro estao emprestados, ou reservados a outras pessoas.\n");
     }
 
     public Exemplar desreservar(Usuario usuario) throws Exception{
@@ -150,7 +176,10 @@ public class Livro implements Subject {
     			
     		}    		
     	}
-    	throw new Exception("Nao ha reservas para o livro no nome desse usuario.\n" + this + "\n" + usuario);    	
+    	throw new Exception(
+                "Nome do Usuario:" + usuario.getNome() + "\n" +
+                "Livro:" + this.getTitulo() +  "\n" +
+                "Nao ha reservas para o livro no nome desse usuario.\n");    	
     }
     
     public String getHistorico(Usuario usuario) {

@@ -18,12 +18,14 @@ public class Funcionario extends Usuario {
 	@Override
 	public Exemplar pegarEmprestado(Livro l) throws Exception {		
 		if (temEmprestimoAtrasado() || getQtdEmprestimos() >= MAX_EMPRESTIMO) {
-			throw new Exception("Nao foi possivel pegar o livro emprestado. O funcionario abaixo tem emprestimos atrasados ou ultrapassou sua cota maxima de emprestimos.\n" +
-				this);
+			throw new Exception(this + 
+                                "\nNao foi possivel pegar o livro emprestado. O funcionario abaixo tem emprestimos atrasados ou ultrapassou sua cota maxima de emprestimos.\n");
 		}
-		Exemplar e = l.pegarEmprestado(this, getDiasEmprestimo(), false);
-		addEmprestado(l);
-		return e;
+                super.pegarEmprestado(l);
+                Exemplar e = l.pegarEmprestado(this, getDiasEmprestimo(), false);
+                addEmprestado(l);
+                return e;   
+                		
 	}
 
 }

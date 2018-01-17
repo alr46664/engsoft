@@ -23,6 +23,7 @@ public class Professor extends Usuario {
 
 	@Override
 	public Exemplar pegarEmprestado(Livro l) throws Exception {		
+                super.pegarEmprestado(l);
 		Exemplar e = l.pegarEmprestado(this, getDiasEmprestimo(), true);
 		addEmprestado(l);
 		return e;
