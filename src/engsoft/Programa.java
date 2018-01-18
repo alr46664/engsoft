@@ -28,11 +28,10 @@ public class Programa {
 	}	
 	
 	public static void main(String[] args) {
-		// inicializacao da biblioteca
-		Biblioteca biblio = Biblioteca.getInstance();
 		
+		// inicializacao da biblioteca		
 		// crie objetos para podermos operar com a biblioteca
-		getData(biblio);
+		getData();
 		
 		// inicializacao dos comandos do programa
 		HashMap<String, Command> commands = new HashMap<String, Command>();
@@ -53,19 +52,26 @@ public class Programa {
 			try {		
 				System.out.println("Digite o commando abaixo: ");
 				String[] argArray = sc.nextLine().split("\\s+");
+				System.out.println("");
 				Command command = commands.get(argArray[0]);			
 				// remova o commando do vetor
-				command.execute(argArray, biblio);
+				command.execute(argArray);
 			} catch(Exception e) {
-				System.out.println("\nErro:");
-				System.out.println(e);
+				System.out.println("\nERRO:");
+				System.out.println(e.getMessage() + "\n" +
+					"DETALHES: ");
+				for(StackTraceElement st: e.getStackTrace()) {
+					System.out.println("\t" + st);
+				}
+				System.out.println("");
 			}
 		}
 		sc.close();			
 	}
 	
 	
-	private static void getData(Biblioteca biblio) {
+	private static void getData() {
+		Biblioteca biblio = Biblioteca.getInstance();
 		Livro l;
 		
 		biblio.addUsuario(new Funcionario("123", "João da Silva"));

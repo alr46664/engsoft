@@ -1,32 +1,34 @@
 package engsoft.usuario;
-import engsoft.biblioteca.Exemplar;
 import engsoft.biblioteca.Livro;
+import engsoft.observer.Observer;
 
-public class Professor extends Usuario {
-	public static final int DIAS_EMPRESTIMO = 7;	
+public class Professor extends Usuario implements Observer {
+	
+	public static final int DIAS_EMPRESTIMO = 7;
+	
+	protected int qtdNotificado;
 	
 	public Professor(String codigo, String nome){
-        super(codigo,nome, DIAS_EMPRESTIMO);
+        super(codigo,nome);
+        setEmprestimoStrategy(new EmprestimoPrioritario(DIAS_EMPRESTIMO));
     }
 
     @Override
     public String toString(){
-        return "Professor: \n" + super.toString();
+        return "\t--------------  PROFESSOR  --------------\n" + super.toString();
     }
 
 	@Override
 	public void update(Livro livro) {
-		System.out.println("O livro abaixo foi reservado por pelo menos 2 usuários.");
 		System.out.println(livro);
+		System.out.println("\nALERTA: Caro professor \"" + this.getNome() + 
+				"\", o livro (descrito acima) foi reservado por pelo menos " +
+				Livro.getReservaNotify() + " usuários.");		
 		this.qtdNotificado++;
 	}	
-
-	@Override
-	public Exemplar pegarEmprestado(Livro l) throws Exception {		
-                super.pegarEmprestado(l);
-		Exemplar e = l.pegarEmprestado(this, getDiasEmprestimo(), true);
-		addEmprestado(l);
-		return e;
+	
+	public int getQtdNotificacao() { 
+    	return this.qtdNotificado;
 	}
     
 }

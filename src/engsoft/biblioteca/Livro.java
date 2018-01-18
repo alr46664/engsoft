@@ -1,5 +1,7 @@
 package engsoft.biblioteca;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import engsoft.observer.Observer;
 import engsoft.observer.Subject;
@@ -9,7 +11,8 @@ public class Livro implements Subject {
     private static int RESERVA_NOTIFY = 3;
     
     private ArrayList<Observer> observers;    
-    private ArrayList<Exemplar> exemplares; 
+    private ArrayList<Exemplar> exemplares;
+    private Set<Usuario> reservas;
 	
 	private String codLivro;
     private String titulo;
@@ -18,9 +21,14 @@ public class Livro implements Subject {
     private String edicao;
     private String anoEdicao;    
 
+    public static int getReservaNotify() {
+    	return Livro.RESERVA_NOTIFY;    	
+    }
+    
     public Livro(String cod, String titulo, String editora, String autores, String edicao, String anoEdicao){
         this.observers = new ArrayList<Observer>();
         this.exemplares = new ArrayList<Exemplar>();
+        this.reservas = new HashSet<Usuario>();
         
         this.codLivro  = cod;
         this.titulo    = titulo;
@@ -28,6 +36,12 @@ public class Livro implements Subject {
         this.autores   = autores;
         this.edicao    = edicao;
         this.anoEdicao = anoEdicao;        
+    }        
+    
+    private void checkNotifyObservers() {
+    	if (this.getQtdReservas() >= Livro.RESERVA_NOTIFY){
+            this.notifyObservers();
+        } 
     }
 
 	public String getCodLivro() {
@@ -54,26 +68,20 @@ public class Livro implements Subject {
 		return anoEdicao;
 	}
         
-        public int getQtdReservas(){
-            int reservas = 0;
-            for(Exemplar e: this.exemplares){
-                if (e.isReservado() != null){
-                    reservas++;
-                }
-            }
-            return reservas;
-        }
+    public int getQtdReservas(){        
+        return this.reservas.size();
+    }
         
-        public int getQtdEmprestimo(){
-            int emprestimos = 0;
-            for(Exemplar e: this.exemplares){
-                if (e.isEmprestado() != null){
-                    emprestimos++;
-                }
+    public int getQtdEmprestimo(){
+        int emprestimos = 0;
+        for(Exemplar e: this.exemplares){
+            if (e.isEmprestado() != null){
+                emprestimos++;
             }
-            return emprestimos;
         }
-
+        return emprestimos;
+    }    
+    
 	@Override
     public String toString(){
         String s = "\t----------  Livro:  ----------"+
@@ -114,16 +122,17 @@ public class Livro implements Subject {
     
     public void removeExemplar(String codExemplar) {
     	for(Exemplar e: this.exemplares) {
-    		if (e.getCodExemplar().equals(codExemplar)) {
+    		if (e.getCodExemplar() != null && e.getCodExemplar().equals(codExemplar)) {
     			this.exemplares.remove(e);
     		}
     	}    	    
     }
     
-    public Exemplar pegarEmprestado(Usuario u, int dias, boolean force) throws Exception {
+    public Exemplar pegarEmprestado(Usuario u, int dias) throws Exception {
     	for (Exemplar exemplar: this.exemplares) {
     		try {
-    			exemplar.pegarEmprestado(u, dias, force);
+    			exemplar.pegarEmprestado(u, dias);
+    			this.reservas.remove(u);
     			return exemplar;	
     		} catch (Exception e) {
     		}    		
@@ -131,55 +140,40 @@ public class Livro implements Subject {
     	throw new Exception("Nenhum exemplar do livro disponivel para emprestimo.\n" + this);
     }
     
+    public Exemplar getExemplarEmprestado(Usuario u) {
+    	for (Exemplar exemplar: this.exemplares) {
+    		if (exemplar.isEmprestado() != null && exemplar.isEmprestado().equals(u)) {
+    			return exemplar;
+    		}
+    	}
+    	return null;
+    }
+    
     public Exemplar devolver(Usuario u) throws Exception {
     	for (Exemplar exemplar: this.exemplares) {
-    		if (exemplar.isEmprestado() != u) { 
+    		if (exemplar.isEmprestado() == null || !exemplar.isEmprestado().equals(u)) { 
     			continue;
-    		}
+    		}    		
     		try {
 				exemplar.devolver();
 				return exemplar;
 			} catch (Exception e) { 
 				throw new Exception(exemplar + "\nNao foi possivel devolver o exemplar.\n");
 			}    		
-    	}
-    	throw new Exception("Nome do Usuario:" + u.getNome() + "\n" +
-                "Livro:" + this.getTitulo() +  "\n" +
+    	}    	
+    	throw new Exception("Nome do Usuario: " + u.getNome() + "\n" +
+                "Livro: " + this.getTitulo() +  "\n" +
                 "\n\nNao foi possivel encontrar o emprestimo do livro feito pelo usuario.\n");    	
     }
     
-    public Exemplar reservar(Usuario usuario, boolean force) throws Exception{    	
-    	for(Exemplar exemplar: this.exemplares) {
-    		try {
-    			exemplar.reservar(usuario, force);    			
-                        if (this.getQtdReservas() >= Livro.RESERVA_NOTIFY){
-                            this.notifyObservers();
-                        }
-    			return exemplar;
-    		} catch (Exception e) {
-    			
-    		}    		
-    	}
-    	throw new Exception("Livro:" + this.getTitulo() +  "\n" +
-                "Todos os exemplares do livro estao emprestados, ou reservados a outras pessoas.\n");
+    public void reservar(Usuario usuario){    	    
+		this.reservas.add(usuario);    			
+        this.checkNotifyObservers();		    	    	
     }
 
-    public Exemplar desreservar(Usuario usuario) throws Exception{
-    	for(Exemplar exemplar: this.exemplares) {
-    		if (exemplar.isReservado() != usuario) {
-    			continue;
-    		}
-    		try {    			
-    			exemplar.desreservar(usuario);
-    			return exemplar;
-    		} catch (Exception e) {
-    			
-    		}    		
-    	}
-    	throw new Exception(
-                "Nome do Usuario:" + usuario.getNome() + "\n" +
-                "Livro:" + this.getTitulo() +  "\n" +
-                "Nao ha reservas para o livro no nome desse usuario.\n");    	
+    public void desreservar(Usuario usuario){
+    	this.reservas.remove(usuario);
+    	this.checkNotifyObservers();
     }
     
     public String getHistorico(Usuario usuario) {
@@ -190,18 +184,16 @@ public class Livro implements Subject {
     	return s;
     }
     
-    public boolean isReservado(Usuario usuario) {
-    	for(Exemplar exemplar: this.exemplares) {
-    		if (exemplar.isReservado() == usuario) {
-    			return true;
-    		}
-    	}
-    	return false;
+    public boolean isReservado(Usuario usuario) {    	
+    	return this.reservas.contains(usuario);
     }
     
     public boolean isEmprestado(Usuario usuario) {
+    	if (usuario == null) {
+    		return false;
+    	}
     	for(Exemplar exemplar: this.exemplares) {
-    		if (exemplar.isEmprestado() == usuario) {
+    		if (exemplar.isEmprestado() != null && exemplar.isEmprestado().equals(usuario)) {
     			return true;
     		}
     	}
@@ -210,7 +202,7 @@ public class Livro implements Subject {
         
 	public boolean isEmprestimoAtrasado(Usuario usuario) throws Exception {		
 		for(Exemplar exemplar: this.exemplares) {
-    		if (exemplar.isEmprestado() == usuario && exemplar.isEmprestimoAtrasado()) {
+    		if (exemplar.isEmprestado() != null && exemplar.isEmprestado().equals(usuario) && exemplar.isEmprestimoAtrasado()) {
     			return true;
     		}
     	}	

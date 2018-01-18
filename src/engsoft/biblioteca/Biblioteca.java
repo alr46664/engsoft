@@ -3,6 +3,7 @@ package engsoft.biblioteca;
 import java.util.ArrayList;
 
 import engsoft.Programa;
+import engsoft.observer.Observer;
 import engsoft.usuario.Usuario;
 
 public class Biblioteca {	
@@ -28,7 +29,7 @@ public class Biblioteca {
 	
 	private Livro getLivro(String codLivro) throws Exception {
 		for (Livro l: this.livros) {
-			if (l.getCodLivro().equals(codLivro)) {
+			if (l.getCodLivro() != null && l.getCodLivro().equals(codLivro)) {
 				return l;
 			}
 		}
@@ -37,7 +38,7 @@ public class Biblioteca {
 	
 	private Usuario getUsuario(String codUsuario) throws Exception {
 		for (Usuario u: this.usuarios) {
-			if (u.getCodigo().equals(codUsuario)) {
+			if (u.getCodigo() != null && u.getCodigo().equals(codUsuario)) {
 				return u;
 			}
 		}
@@ -71,18 +72,26 @@ public class Biblioteca {
 	public void reservar(String codUsuario, String codLivro) throws Exception {
 		Usuario usuario = getUsuario(codUsuario);
 		Livro livro = getLivro(codLivro);
-		Exemplar exemplar = usuario.reservar(livro);
-		System.out.println(exemplar + "\nSucesso - Reserva do livro realizada com sucesso!\n");
+		usuario.reservar(livro);
+		System.out.println("Nome do Usuario: " + usuario.getNome() + "\n" +
+                "Livro: " + livro.getTitulo() + "\n" +
+				"\nSucesso - Reserva do livro realizada com sucesso!\n");
 	}
 	
 	public void registrarObservar(String codUsuario, String codLivro) throws Exception {
 		Usuario usuario = getUsuario(codUsuario);
 		Livro livro = getLivro(codLivro);
-		livro.registerObserver(usuario);
+		if (!Observer.class.isInstance(usuario)) {
+			throw new Exception("Nome do Usuario: " + usuario.getNome() + "\n" +
+	                "Livro: " + livro.getTitulo() + "\n" +
+					"\nO usuario nao pode observar as reservas do livro.\n");
+		}	
+		Observer obs = (Observer) usuario;
+		livro.registerObserver(obs);
 		System.out.println(
-                        "Nome do Usuario: " + usuario.getNome() + "\n" +
-                        "Livro: " + livro.getTitulo() + "\n" +
-                        "\nSucesso - Registro de novo observador realizado com sucesso!\n");
+            "Nome do Usuario: " + usuario.getNome() + "\n" +
+            "Livro: " + livro.getTitulo() + "\n" +
+            "\nSucesso - Registro de novo observador realizado com sucesso!\n");
 	}
 	
 	public void exibirListagem(String codUsuario) throws Exception {
@@ -97,8 +106,13 @@ public class Biblioteca {
 	
 	public void consultarNotificacao(String codUsuario) throws Exception {
 		Usuario usuario = getUsuario(codUsuario);
-		System.out.println("O usuario abaixo teve \"" + usuario.getQtdNotificacao() + "\" notificacoes de reserva de livros.\n" +
-			usuario);
+		if (!Observer.class.isInstance(usuario)) {
+			throw new Exception("Nome do Usuario: " + usuario.getNome() + "\n" +	                
+					"\nO usuario nao pode observar as reservas do livro. Logo ele nao possui notificacoes.\n");
+		}	
+		Observer obs = (Observer) usuario;
+		System.out.println("Nome do Usuario: " + usuario.getNome() + "\n" +
+				"\nO usuario teve \"" + obs.getQtdNotificacao() + "\" notificacoes de reserva de livros.\n");
 	}
 	
 	public void sair() {
