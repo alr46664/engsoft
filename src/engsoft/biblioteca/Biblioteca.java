@@ -72,9 +72,9 @@ public class Biblioteca {
 	public void reservar(String codUsuario, String codLivro) throws Exception {
 		Usuario usuario = getUsuario(codUsuario);
 		Livro livro = getLivro(codLivro);
-		usuario.reservar(livro);
-		System.out.println("Nome do Usuario: " + usuario.getNome() + "\n" +
-                "Livro: " + livro.getTitulo() + "\n" +
+		Reserva res = usuario.reservar(livro);
+		System.out.println("Livro: " + livro.getTitulo() + "\n" +
+				res +
 				"\nSucesso - Reserva do livro realizada com sucesso!\n");
 	}
 	

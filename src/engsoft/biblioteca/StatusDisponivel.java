@@ -1,15 +1,12 @@
 package engsoft.biblioteca;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import engsoft.usuario.Usuario;
 
 public class StatusDisponivel extends Status {
 
 
-	public StatusDisponivel(Exemplar exemplar, Usuario usuario, int diasEmprestimo) {
-		super(exemplar, usuario, diasEmprestimo);		
+	public StatusDisponivel(Exemplar exemplar) {
+		super(exemplar);		
 	}
 
 	@Override

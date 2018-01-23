@@ -1,7 +1,6 @@
 package engsoft.biblioteca;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import engsoft.usuario.Usuario;
 
@@ -9,20 +8,35 @@ public class Exemplar {
 	private Livro livro;	
     private String codExemplar;   
     private Status state;
-    private ArrayList<Status> historico;
+    private ArrayList<StatusEmprestado> historico;
 
     public Exemplar(String codExemplar, Livro livro) {
-    	this.historico = new ArrayList<Status>();    	
+    	this.historico = new ArrayList<StatusEmprestado>();    	
     	this.codExemplar = codExemplar;
     	this.livro = livro;
-    	this.state = new StatusDisponivel(this, null, 0);    	    	
+    	this.state = new StatusDisponivel(this);    	    	
+    }
+    
+    @Override    
+    public int hashCode() {
+        return Integer.parseInt(this.getCodExemplar());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+    	Exemplar ex;
+    	if (Exemplar.class.isInstance(o)) {
+    		ex = (Exemplar) o;
+    	} else {
+    		return false;
+    	}
+    	return this.getCodExemplar() != null && this.getCodExemplar().equals(ex.getCodExemplar());
     }
     
     @Override
     public String toString(){
         String s = "Codigo do Exemplar: " + codExemplar + "\n";
         s += state;        
-        s += "----------------------------\n";
     	return s;
     }         
 
@@ -37,17 +51,15 @@ public class Exemplar {
     public String getHistorico(Usuario usuario) {
     	boolean hasOneUser = false;
     	String s = "Historico do Exemplar: " + codExemplar  + "\n\t\t";
-        for (Status status: historico) {
-        	if (status.isEmprestado() == usuario || usuario == null) {
-        		s += status + "\n\t\t";
-        		hasOneUser = true;
-        	}        	
+        for (StatusEmprestado status: this.historico) {        	
+    		s += status + "\n\t\t";
+    		s += "----------------------------\n";
+    		hasOneUser = true;        	
         }
         return (hasOneUser ? s : "");
-    }
+    }    
     
     public void setState(Status s) {
-    	this.historico.add(this.state);
     	this.state = s;
     }
     
@@ -57,6 +69,7 @@ public class Exemplar {
     
     public void pegarEmprestado(Usuario usuario, int dias) throws Exception {
     	this.state.pegarEmprestado(usuario, dias);
+    	this.historico.add((StatusEmprestado) this.state);
     }
     
     public void devolver() throws Exception {

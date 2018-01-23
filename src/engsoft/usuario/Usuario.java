@@ -5,6 +5,7 @@ import java.util.Set;
 
 import engsoft.biblioteca.Exemplar;
 import engsoft.biblioteca.Livro;
+import engsoft.biblioteca.Reserva;
 
 public abstract class  Usuario {
     public static final int MAX_RESERVA = 3;	
@@ -29,18 +30,37 @@ public abstract class  Usuario {
     }
     
     @Override
+    public int hashCode() {
+        return Integer.parseInt(this.getCodigo());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+    	Usuario u;
+    	if (Usuario.class.isInstance(o)) {
+    		u = (Usuario) o;
+    	} else {
+    		return false;
+    	}
+    	return this.getCodigo() != null && this.getCodigo().equals(u.getCodigo());
+    }
+    
+    @Override
     public String toString(){
         String s = "\tNome: "+getNome()+"\n";
 		s += "\tCodigo: " +getCodigo() + "\n";
 		s += "\n\t-------------- RESERVAS -----------------\n";
-		for (Livro liv: this.reservas) {
+		for (Livro liv: this.reservas) {			
 			s += "Livro: " + liv.getTitulo() + "\n";
+			s += liv.getReserva(this);	
+			s += "----------------------------\n";
 		}
 		s += "\n\t-------------- EMPRESTIMOS -----------------\n";
 		for (Livro liv: this.emprestimos) {
 			s += liv.getExemplarEmprestado(this) + "\n";
+			s += "----------------------------\n";
 		}
-		s += "\n\t-------------- HISTORICO DE OPERACOES (RESERVA / EMPRESTIMO PASSADOS) -----------------\n";
+		s += "\n\t-------------- HISTORICO DE OPERACOES (EMPRESTIMOS PASSADOS) -----------------\n";
 		for (Livro liv: this.historico) {
 			s += liv.getHistorico(this) + "\n";
 		}
@@ -99,7 +119,7 @@ public abstract class  Usuario {
     	return res;
     }
         
-    public final void reservar(Livro l) throws Exception {
+    public final Reserva reservar(Livro l) throws Exception {
     	if (getQtdReservas() >= MAX_RESERVA) {
     		throw new Exception("Usuario: " + this.getNome() + "\n" +
     				"\nO usuario ultrapassou o limite maximo de reservas (" + MAX_RESERVA +
@@ -109,8 +129,9 @@ public abstract class  Usuario {
             throw new Exception("Usuario: " + this.getNome() + "\n" +
             		"\nO usuario ja reservou ou pegou emprestado o livro.\n");
     	}
-    	l.reservar(this);
+    	Reserva res = l.reservar(this);
         this.reservas.add(l);
+        return res;
     }
     
     public final Exemplar pegarEmprestado(Livro l) throws Exception {

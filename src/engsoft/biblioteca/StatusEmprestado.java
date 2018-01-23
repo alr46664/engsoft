@@ -1,14 +1,28 @@
 package engsoft.biblioteca;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import engsoft.usuario.Usuario;
 
 public class StatusEmprestado extends Status {	
-	
+	protected Date dataEmprestimo;
+	protected Date dataDevolucaoEsperada;
+	protected Date dataDevolucaoFeita;	
+	protected Usuario usuario;
 
 	public StatusEmprestado(Exemplar exemplar, Usuario usuario, int diasEmprestimo) {
-		super(exemplar, usuario, diasEmprestimo);		
+		super(exemplar);	
+		this.usuario = usuario;
+		// emprestimo feito hoje
+		this.dataEmprestimo = new Date();
+		// defina quando o usuario deve devolver o livro
+		Calendar c = Calendar.getInstance();
+		c.setTime(this.dataEmprestimo);
+		c.add(Calendar.DATE, diasEmprestimo);					
+		this.dataDevolucaoEsperada = c.getTime();
+		// ainda nao devolvido
+		this.dataDevolucaoFeita = null;
 	}
 
 	@Override
@@ -19,7 +33,7 @@ public class StatusEmprestado extends Status {
 	@Override
 	public void devolver() throws Exception {
 		this.dataDevolucaoFeita = new Date();
-		Status s = new StatusDisponivel(this.exemplar, null, 0);		
+		Status s = new StatusDisponivel(this.exemplar);		
 		this.exemplar.setState(s);
 	}
 
