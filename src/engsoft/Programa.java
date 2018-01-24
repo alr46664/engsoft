@@ -58,11 +58,11 @@ public class Programa {
 				command.execute(argArray);
 			} catch(Exception e) {
 				System.out.println("\nERRO:");
-				System.out.println(e.getMessage() + "\n" +
-					"DETALHES: ");
-				for(StackTraceElement st: e.getStackTrace()) {
-					System.out.println("\t" + st);
-				}
+				System.out.println(e.getMessage());
+				// System.out.println("DETALHES: ");
+				// for(StackTraceElement st: e.getStackTrace()) {
+				// 	System.out.println("\t" + st);
+				// }
 				System.out.println("");
 			}
 		}
