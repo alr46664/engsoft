@@ -1,5 +1,10 @@
 package engsoft.usuario;
 
+/**
+ * Classe do Usuario de tipo Funcionario
+ * @author Andre Madureira, Felipe Ribeiro, Dhene Arlis
+ *
+ */
 public class Funcionario extends Usuario {
 	public static final int DIAS_EMPRESTIMO = 2;
 	public static final int MAX_EMPRESTIMO = 3;

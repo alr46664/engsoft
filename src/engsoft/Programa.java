@@ -18,15 +18,27 @@ import engsoft.usuario.Aluno;
 import engsoft.usuario.Funcionario;
 import engsoft.usuario.Professor;
 
+/**
+ * Gerencia a execucao do programa, chamando os Commands necessarios e gerando os dados de testes na Biblioteca
+ * @author Andre Madureira, Felipe Ribeiro, Dhene Arlis
+ *
+ */
 public class Programa {	
 	
 	// controle de execucao
 	private static boolean continueRunning = true;		
 	
+	/**
+	 * Para a execucao do programa de forma segura
+	 */
 	public static void stop() {
 		continueRunning = false;
 	}	
 	
+	/**
+	 * O programa iniciara aqui
+	 * @param args argumentos de inicializacao do console para o programa
+	 */
 	public static void main(String[] args) {
 		
 		// inicializacao da biblioteca		
@@ -50,35 +62,36 @@ public class Programa {
 		Scanner sc = new Scanner(System.in).useDelimiter("\\s");
 		while(continueRunning) {
 			try {		
+				// aguarde o usuario digitar o comando e, entao, execute-o
 				System.out.println("Digite o commando abaixo: ");
 				String[] argArray = sc.nextLine().split("\\s+");
 				System.out.println("");
 				Command command = commands.get(argArray[0]);			
-				// remova o commando do vetor
 				command.execute(argArray);
 			} catch(Exception e) {
+				// Houve um erro na execucao do comando, reportar erro ao usuario
 				System.out.println("\nERRO:");
 				System.out.println(e.getMessage());
-				// System.out.println("DETALHES: ");
-				// for(StackTraceElement st: e.getStackTrace()) {
-				// 	System.out.println("\t" + st);
-				// }
 				System.out.println("");
 			}
 		}
 		sc.close();			
 	}
 	
-	
+	/**
+	 * Cria os dados de teste da biblioteca
+	 */
 	private static void getData() {
 		Biblioteca biblio = Biblioteca.getInstance();
 		Livro l;
-		
+
+		// Cria usuarios
 		biblio.addUsuario(new Funcionario("123", "João da Silva"));
 		biblio.addUsuario(new Aluno("456", "Luiz Fernando Rodrigues"));
 		biblio.addUsuario(new Funcionario("789", "Pedro Paulo"));
 		biblio.addUsuario(new Professor("100", "Carlos Lucena"));
 		
+		// Criacao dos livros
 		l = new Livro("100","Engenharia de Software","AddisonWesley","Ian Sommervile","6","2000");
 		l.addExemplar("01");
 		l.addExemplar("02");

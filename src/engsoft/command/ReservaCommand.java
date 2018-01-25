@@ -4,6 +4,9 @@ import engsoft.biblioteca.Biblioteca;
 
 public class ReservaCommand implements Command {
 
+	/**
+	 * Realiza reserva de um livro para um usuario
+	 */
 	@Override
 	public void execute(String[] args) throws Exception {
 		if (args.length != 3) {

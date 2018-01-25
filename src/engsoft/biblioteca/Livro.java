@@ -7,7 +7,14 @@ import engsoft.observer.Observer;
 import engsoft.observer.Subject;
 import engsoft.usuario.Usuario;
 
+/**
+ * Classe que gerencia um Livro
+ * @author Andre Madureira, Felipe Ribeiro, Dhene Arlis
+ *
+ */
 public class Livro implements Subject {
+	// variavel que indica quantas reservas devem ser feitas antes de emitir 
+	// uma notificacao para os Observers
     private static int RESERVA_NOTIFY = 3;
     
     private ArrayList<Observer> observers;    
@@ -20,7 +27,11 @@ public class Livro implements Subject {
     private String autores;
     private String edicao;
     private String anoEdicao;    
-
+    
+    /**
+     * Retorna quantas reservas de um Livro devem ser feitas antes de emitir uma notificacao para os Observers
+     * @return numero de reservas minimo para emitir notificacao aos Observers
+     */
     public static int getReservaNotify() {
     	return Livro.RESERVA_NOTIFY;    	
     }
@@ -38,6 +49,9 @@ public class Livro implements Subject {
         this.anoEdicao = anoEdicao;        
     }        
     
+    /**
+     * Verifica se atingimos o numero minimo de reservas para emitir notificacao aos Observers
+     */
     private void checkNotifyObservers() {
     	if (this.getQtdReservas() >= Livro.RESERVA_NOTIFY){
             this.notifyObservers();
@@ -138,10 +152,18 @@ public class Livro implements Subject {
 		}
 	}
     
+	/**
+	 * Adiciona um novo Exemplar do Livro
+	 * @param codExemplar codigo do exemplar do Livro
+	 */
     public void addExemplar(String codExemplar) {    	
     	this.exemplares.add(new Exemplar(codExemplar, this));    	
     }
     
+    /**
+     * Remove um Exemplar do Livro
+	 * @param codExemplar codigo do exemplar do Livro
+     */
     public void removeExemplar(String codExemplar) {
     	for(Exemplar e: this.exemplares) {
     		if (e.getCodExemplar() != null && e.getCodExemplar().equals(codExemplar)) {
@@ -150,6 +172,13 @@ public class Livro implements Subject {
     	}    	    
     }
     
+    /**
+     * Realiza o emprestimo de um Exemplar desse Livro para o Usuario, caso isso seja possivel (vide especificacao do trabalho)
+     * @param u usuario que deseja pegar um Exemplar do Livro emprestado
+     * @param dias numero de dias maximo que o usuario pode permanecer com o Livro emprestado
+     * @return Exemplar que foi emprestado com sucesso para o usuario
+     * @throws Exception caso o procedimento nao seja bem sucedido (vide especificacao do trabalho para maiores detalhes), um Exception sera gerado
+     */
     public Exemplar pegarEmprestado(Usuario u, int dias) throws Exception {
     	for (Exemplar exemplar: this.exemplares) {
     		try {
@@ -162,6 +191,11 @@ public class Livro implements Subject {
     	throw new Exception("Nenhum exemplar do livro disponivel para emprestimo.\n" + this);
     }
     
+    /**
+     * Retorna a Reserva feita pelo usuario com relacao ao Livro
+     * @param usuario usuario que realizou a reserva do livro
+     * @return Reserva feita pelo usuario
+     */
     public Reserva getReserva(Usuario usuario) {    	
     	for (Reserva res: this.reservas) {
     		if (res.getUsuario() != null && res.getUsuario().equals(usuario)) {
@@ -171,6 +205,11 @@ public class Livro implements Subject {
     	return null;
     }
     
+    /**
+     * Retorna o Exemplar que foi emrpestado para o usuario
+     * @param u usuario que fez o emprestimo
+     * @return Exemplar que o usuario pegou emprestado
+     */
     public Exemplar getExemplarEmprestado(Usuario u) {
     	for (Exemplar exemplar: this.exemplares) {
     		if (exemplar.isEmprestado() != null && exemplar.isEmprestado().equals(u)) {
@@ -180,6 +219,12 @@ public class Livro implements Subject {
     	return null;
     }
     
+    /**
+     * Devolve o Exemplar que foi emrpestado para o usuario
+     * @param u usuario que fez o emprestimo
+     * @return Exemplar que o usuario devoleu
+     * @throws Exception caso o procedimento nao seja bem sucedido (vide especificacao do trabalho para maiores detalhes), um Exception sera gerado
+     */
     public Exemplar devolver(Usuario u) throws Exception {
     	for (Exemplar exemplar: this.exemplares) {
     		if (exemplar.isEmprestado() == null || !exemplar.isEmprestado().equals(u)) { 
@@ -197,18 +242,32 @@ public class Livro implements Subject {
                 "\n\nNao foi possivel encontrar o emprestimo do livro feito pelo usuario.\n");    	
     }
     
+    /**
+     * Reserva o Livro para o usuario
+     * @param usuario usuario que deseja reservar o Livro
+     * @return Reserva do usuario
+     */
     public Reserva reservar(Usuario usuario){    	    
 		Reserva res = new Reserva(usuario);
     	this.reservas.add(res);    			
         this.checkNotifyObservers();
         return res;
     }
-
+    
+    /**
+     * Remove a reserva do Livro feita pelo usuario
+     * @param usuario usuario realizou a reserva do Livro
+     */
     public void desreservar(Usuario usuario){    	
     	this.reservas.remove(new Reserva(usuario));
     	this.checkNotifyObservers();
     }
     
+    /**
+     * Pega o historico do usuario com relacao a todos os exemplares do Livro
+     * @param usuario usuario que se deseja pegar o historico
+     * @return Historico do usuario com relacao aos exemplares desse Livro
+     */
     public String getHistorico(Usuario usuario) {
     	String s = "";
     	for (Exemplar exemplar: this.exemplares) {
@@ -217,10 +276,20 @@ public class Livro implements Subject {
     	return s;
     }
     
+    /**
+     * Verifica se o usuario realizou uma reserva do Livro
+     * @param usuario usuario
+     * @return true se houver uma reserva feita por este usuario, false do contrario
+     */
     public boolean isReservado(Usuario usuario) {    	
     	return this.reservas.contains(new Reserva(usuario));
     }
     
+    /**
+     * Verifica se o usuario realizou um emprestimo do Livro
+     * @param usuario usuario
+     * @return true se houver um emprestimo feita por este usuario, false do contrario
+     */
     public boolean isEmprestado(Usuario usuario) {
     	if (usuario == null) {
     		return false;
@@ -233,6 +302,12 @@ public class Livro implements Subject {
     	return false;
     }
         
+    /**
+     * Verifica se o usuario possui emprestimos atrasados do Livro
+     * @param usuario usuario
+     * @return true se houver pelo menos um emprestimo atrasado feito por este usuario, false do contrario
+     * @throws Exception caso um erro no procedimento ocorra, interrompa o processo gerando um Exception
+     */
 	public boolean isEmprestimoAtrasado(Usuario usuario) throws Exception {		
 		for(Exemplar exemplar: this.exemplares) {
     		if (exemplar.isEmprestado() != null && exemplar.isEmprestado().equals(usuario) && exemplar.isEmprestimoAtrasado()) {

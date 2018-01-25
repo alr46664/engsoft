@@ -4,6 +4,9 @@ import engsoft.biblioteca.Biblioteca;
 
 public class EmprestimoCommand implements Command {
 
+	/**
+	 * Realiza emprestimo de um livro emprestado para um usuario
+	 */
 	@Override
 	public void execute(String[] args) throws Exception {
 		if (args.length != 3) {

@@ -4,6 +4,9 @@ import engsoft.biblioteca.Biblioteca;
 
 public class ObservarCommand implements Command {
 
+	/**
+	 * Registra um usuario como observador de um livro
+	 */
 	@Override
 	public void execute(String[] args) throws Exception {
 		if (args.length != 3) {

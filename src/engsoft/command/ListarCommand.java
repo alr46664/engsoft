@@ -4,6 +4,9 @@ import engsoft.biblioteca.Biblioteca;
 
 public class ListarCommand implements Command {
 
+	/**
+	 * Realiza consulta de um usuario
+	 */
 	@Override
 	public void execute(String[] args) throws Exception {
 		if (args.length != 2) {

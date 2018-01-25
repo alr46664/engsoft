@@ -2,6 +2,11 @@ package engsoft.usuario;
 import engsoft.biblioteca.Livro;
 import engsoft.observer.Observer;
 
+/**
+ * Classe do Usuario de tipo Professor
+ * @author Andre Madureira, Felipe Ribeiro, Dhene Arlis
+ *
+ */
 public class Professor extends Usuario implements Observer {
 	
 	public static final int DIAS_EMPRESTIMO = 7;
@@ -27,6 +32,7 @@ public class Professor extends Usuario implements Observer {
 		this.qtdNotificado++;
 	}	
 	
+	@Override
 	public int getQtdNotificacao() { 
     	return this.qtdNotificado;
 	}

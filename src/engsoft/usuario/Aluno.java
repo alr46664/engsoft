@@ -1,5 +1,10 @@
 package engsoft.usuario;
 
+/**
+ * Classe do Usuario de tipo Aluno
+ * @author Andre Madureira, Felipe Ribeiro, Dhene Arlis
+ *
+ */
 public class Aluno extends Usuario {
     public static final int DIAS_EMPRESTIMO = 5;    
     public static final int MAX_EMPRESTIMO = 4;

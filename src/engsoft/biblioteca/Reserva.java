@@ -4,6 +4,11 @@ import java.util.Date;
 
 import engsoft.usuario.Usuario;
 
+/**
+ * Classe que gerencia reservas de um Livro
+ * @author Andre Madureira, Felipe Ribeiro, Dhene Arlis
+ *
+ */
 public class Reserva {
 	private Date data;
 	private Usuario usuario;
